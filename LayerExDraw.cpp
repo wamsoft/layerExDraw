@@ -1,3 +1,12 @@
+#include <windows.h>
+#include <tp_stub.h>
+#include <gdiplus.h>
+#if _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#define new ::new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 #pragma comment(lib, "gdiplus.lib")
 #include "ncbind/ncbind.hpp"
 #include "LayerExDraw.hpp"
@@ -286,7 +295,7 @@ FontInfo::clear()
  * フォントの指定
  */
 void
-FontInfo::setFamilyName(const tjs_char *familyName)
+FontInfo::setFamilyName(ttstr familyName)
 {
   propertyModified = true;
 
@@ -297,10 +306,10 @@ FontInfo::setFamilyName(const tjs_char *familyName)
     return;
   }
 
-	if (familyName) {
+  if (! familyName.IsEmpty()) {
 		clear();
 		if (privateFontCollection) {
-			fontFamily = new FontFamily(familyName, privateFontCollection);
+                  fontFamily = new FontFamily(familyName.c_str(), privateFontCollection);
 			if (fontFamily->IsAvailable()) {
 				this->familyName = familyName;
 				return;
@@ -308,7 +317,7 @@ FontInfo::setFamilyName(const tjs_char *familyName)
 				clear();
 			}
 		}
-		fontFamily = new FontFamily(familyName);
+		fontFamily = new FontFamily(familyName.c_str());
 		if (fontFamily->IsAvailable()) {
 			this->familyName = familyName;
 			return;
@@ -324,7 +333,7 @@ void
 FontInfo::setForceSelfPathDraw(bool state)
 {
   forceSelfPathDraw = state;
-  this->setFamilyName(familyName.c_str());
+  this->setFamilyName(familyName);
 }
 
 bool

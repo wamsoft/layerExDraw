@@ -73,7 +73,7 @@ public:
 	 */
 	virtual ~FontInfo();
 
-	void setFamilyName(const tjs_char *familyName);
+	void setFamilyName(ttstr familyName);
 	const tjs_char *getFamilyName() { return familyName.c_str(); }
 	void setEmSize(REAL emSize) { this->emSize = emSize; propertyModified = true; }
 	REAL getEmSize() {  return emSize; }
