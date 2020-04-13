@@ -324,7 +324,8 @@ void
 FontInfo::setForceSelfPathDraw(bool state)
 {
   forceSelfPathDraw = state;
-  this->setFamilyName(familyName.c_str());
+  ttstr _name = familyName;
+  this->setFamilyName(_name.c_str());
 }
 
 bool
