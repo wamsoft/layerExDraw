@@ -1672,7 +1672,7 @@ LayerExDraw::measureStringInternal(const FontInfo *font, const tjs_char *text)
   Font f(font->fontFamily, font->emSize, font->style, UnitPixel);
   graphics->MeasureString(text, -1, &f, PointF(0,0), StringFormat::GenericDefault(), &rect);
   CharacterRange charRange(0, INT(wcslen(text)));
-  StringFormat stringFormat = StringFormat::GenericDefault();
+  StringFormat stringFormat(StringFormat::GenericDefault());
   stringFormat.SetMeasurableCharacterRanges(1, &charRange);
   Region region;
   graphics->MeasureCharacterRanges(text, -1, &f, rect, &stringFormat, 1, &region);
