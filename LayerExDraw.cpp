@@ -184,7 +184,7 @@ GdiPlus::addPrivateFont(const tjs_char *fontFileName)
 			}
 		}
 	}
-	TVPThrowExceptionMessage(L"cannot open:%1", fontFileName);
+	TVPThrowExceptionMessage(TJS_W("cannot open:%1"), fontFileName);
 }
 
 /**
@@ -599,7 +599,7 @@ void commonBrushParameter(ncbPropAccessor &info, T *brush)
 {
 	tTJSVariant var;
 	// SetBlend
-	if (info.checkVariant(L"blend", var)) {
+	if (info.checkVariant(TJS_W("blend"), var)) {
 		vector<REAL> factors;
 		vector<REAL> positions;
 		ncbPropAccessor binfo(var);
@@ -607,8 +607,8 @@ void commonBrushParameter(ncbPropAccessor &info, T *brush)
 			getReals(binfo, 0, factors);
 			getReals(binfo, 1, positions);
 		} else {
-			getReals(binfo, L"blendFactors", factors);
-			getReals(binfo, L"blendPositions", positions);
+			getReals(binfo, TJS_W("blendFactors"), factors);
+			getReals(binfo, TJS_W("blendPositions"), positions);
 		}
 		int count = (int)factors.size();
 		if ((int)positions.size() > count) {
@@ -619,33 +619,33 @@ void commonBrushParameter(ncbPropAccessor &info, T *brush)
 		}
 	}
 	// SetBlendBellShape
-	if (info.checkVariant(L"blendBellShape", var)) {
+	if (info.checkVariant(TJS_W("blendBellShape"), var)) {
 		ncbPropAccessor sinfo(var);
 		if (IsArray(var)) {
 			brush->SetBlendBellShape((REAL)sinfo.getRealValue(0),
 									 (REAL)sinfo.getRealValue(1));
 		} else {
-			brush->SetBlendBellShape((REAL)info.getRealValue(L"focus"),
-									 (REAL)info.getRealValue(L"scale"));
+			brush->SetBlendBellShape((REAL)info.getRealValue(TJS_W("focus")),
+									 (REAL)info.getRealValue(TJS_W("scale")));
 		}
 	}
 	// SetBlendTriangularShape
-	if (info.checkVariant(L"blendTriangularShape", var)) {
+	if (info.checkVariant(TJS_W("blendTriangularShape"), var)) {
 		ncbPropAccessor sinfo(var);
 		if (IsArray(var)) {
 			brush->SetBlendTriangularShape((REAL)sinfo.getRealValue(0),
 										   (REAL)sinfo.getRealValue(1));
 		} else {
-			brush->SetBlendTriangularShape((REAL)info.getRealValue(L"focus"),
-										   (REAL)info.getRealValue(L"scale"));
+			brush->SetBlendTriangularShape((REAL)info.getRealValue(TJS_W("focus")),
+										   (REAL)info.getRealValue(TJS_W("scale")));
 		}
 	}
 	// SetGammaCorrection
-	if (info.checkVariant(L"useGammaCorrection", var)) {
+	if (info.checkVariant(TJS_W("useGammaCorrection"), var)) {
 		brush->SetGammaCorrection((BOOL)var);
 	}
 	// SetInterpolationColors
-	if (info.checkVariant(L"interpolationColors", var)) {
+	if (info.checkVariant(TJS_W("interpolationColors"), var)) {
 		vector<Color> colors;
 		vector<REAL> positions;
 		ncbPropAccessor binfo(var);
@@ -653,8 +653,8 @@ void commonBrushParameter(ncbPropAccessor &info, T *brush)
 			getColors(binfo, 0, colors);
 			getReals(binfo, 1, positions);
 		} else {
-			getColors(binfo, L"presetColors", colors);
-			getReals(binfo, L"blendPositions", positions);
+			getColors(binfo, TJS_W("presetColors"), colors);
+			getReals(binfo, TJS_W("blendPositions"), positions);
 		}
 		int count = (int)colors.size();
 		if ((int)positions.size() > count) {
@@ -677,24 +677,24 @@ Brush* createBrush(const tTJSVariant colorOrBrush)
 	} else {
 		// 種別ごとに作り分ける
 		ncbPropAccessor info(colorOrBrush);
-		BrushType type = (BrushType)info.getIntValue(L"type", BrushTypeSolidColor);
+		BrushType type = (BrushType)info.getIntValue(TJS_W("type"), BrushTypeSolidColor);
 		switch (type) {
 		case BrushTypeSolidColor:
-			brush = new SolidBrush(Color((ARGB)info.getIntValue(L"color", 0xffffffff)));
+			brush = new SolidBrush(Color((ARGB)info.getIntValue(TJS_W("color"), 0xffffffff)));
 			break;
 		case BrushTypeHatchFill:
-			brush = new HatchBrush((HatchStyle)info.getIntValue(L"hatchStyle", HatchStyleHorizontal),
-								   Color((ARGB)info.getIntValue(L"foreColor", 0xffffffff)),
-								   Color((ARGB)info.getIntValue(L"backColor", 0xff000000)));
+			brush = new HatchBrush((HatchStyle)info.getIntValue(TJS_W("hatchStyle"), HatchStyleHorizontal),
+								   Color((ARGB)info.getIntValue(TJS_W("foreColor"), 0xffffffff)),
+								   Color((ARGB)info.getIntValue(TJS_W("backColor"), 0xff000000)));
 			break;
 		case BrushTypeTextureFill:
 			{
-				ttstr imgname = info.GetValue(L"image", ncbTypedefs::Tag<ttstr>());
+				ttstr imgname = info.GetValue(TJS_W("image"), ncbTypedefs::Tag<ttstr>());
 				Image *image = loadImage(imgname.c_str());
 				if (image) {
-					WrapMode wrapMode = (WrapMode)info.getIntValue(L"wrapMode", WrapModeTile);
+					WrapMode wrapMode = (WrapMode)info.getIntValue(TJS_W("wrapMode"), WrapModeTile);
 					tTJSVariant dstRect;
-					if (info.checkVariant(L"dstRect", dstRect)) {
+					if (info.checkVariant(TJS_W("dstRect"), dstRect)) {
 						brush = new TextureBrush(image, wrapMode, getRect(dstRect));
 					} else {
 						brush = new TextureBrush(image, wrapMode);
@@ -707,9 +707,9 @@ Brush* createBrush(const tTJSVariant colorOrBrush)
 			{
 				PathGradientBrush *pbrush;
 				vector<PointF> points;
-				getPoints(info, L"points", points);
-				if ((int)points.size() == 0) TVPThrowExceptionMessage(L"must set poins");
-				WrapMode wrapMode = (WrapMode)info.getIntValue(L"wrapMode", WrapModeTile);
+				getPoints(info, TJS_W("points"), points);
+				if ((int)points.size() == 0) TVPThrowExceptionMessage(TJS_W("must set poins"));
+				WrapMode wrapMode = (WrapMode)info.getIntValue(TJS_W("wrapMode"), WrapModeTile);
 				pbrush = new PathGradientBrush(&points[0], (int)points.size(), wrapMode);
 
 				// 共通パラメータ
@@ -717,26 +717,26 @@ Brush* createBrush(const tTJSVariant colorOrBrush)
 
 				tTJSVariant var;
 				//SetCenterColor
-				if (info.checkVariant(L"centerColor", var)) {
+				if (info.checkVariant(TJS_W("centerColor"), var)) {
 					pbrush->SetCenterColor(Color((ARGB)(tjs_int)var));
 				}
 				//SetCenterPoint
-				if (info.checkVariant(L"centerPoint", var)) {
+				if (info.checkVariant(TJS_W("centerPoint"), var)) {
 					pbrush->SetCenterPoint(getPoint(var));
 				}
 				//SetFocusScales
-				if (info.checkVariant(L"focusScales", var)) {
+				if (info.checkVariant(TJS_W("focusScales"), var)) {
 					ncbPropAccessor sinfo(var);
 					if (IsArray(var)) {
 						pbrush->SetFocusScales((REAL)sinfo.getRealValue(0),
 											   (REAL)sinfo.getRealValue(1));
 					} else {
-						pbrush->SetFocusScales((REAL)info.getRealValue(L"xScale"),
-											   (REAL)info.getRealValue(L"yScale"));
+						pbrush->SetFocusScales((REAL)info.getRealValue(TJS_W("xScale")),
+											   (REAL)info.getRealValue(TJS_W("yScale")));
 					}
 				}
 				//SetSurroundColors
-				if (info.checkVariant(L"surroundColors", var)) {
+				if (info.checkVariant(TJS_W("surroundColors"), var)) {
 					vector<Color> colors;
 					getColors(var, colors);
 					int size = (int)colors.size();
@@ -748,43 +748,43 @@ Brush* createBrush(const tTJSVariant colorOrBrush)
 		case BrushTypeLinearGradient:
 			{
 				LinearGradientBrush *lbrush;
-				Color color1((ARGB)info.getIntValue(L"color1", 0));
-				Color color2((ARGB)info.getIntValue(L"color2", 0));
+				Color color1((ARGB)info.getIntValue(TJS_W("color1"), 0));
+				Color color2((ARGB)info.getIntValue(TJS_W("color2"), 0));
 
 				tTJSVariant var;
-				if (info.checkVariant(L"point1", var)) {
+				if (info.checkVariant(TJS_W("point1"), var)) {
 					PointF point1 = getPoint(var);
-					info.checkVariant(L"point2", var);
+					info.checkVariant(TJS_W("point2"), var);
 					PointF point2 = getPoint(var);
 					lbrush = new LinearGradientBrush(point1, point2, color1, color2);
-				} else if (info.checkVariant(L"rect", var)) {
+				} else if (info.checkVariant(TJS_W("rect"), var)) {
 					RectF rect = getRect(var);
-					if (info.HasValue(L"angle")) {
+					if (info.HasValue(TJS_W("angle"))) {
 						// アングル指定がある場合
 						lbrush = new LinearGradientBrush(rect, color1, color2,
-														 (REAL)info.getRealValue(L"angle", 0),
-														 (BOOL)info.getIntValue(L"isAngleScalable", 0));
+														 (REAL)info.getRealValue(TJS_W("angle"), 0),
+														 (BOOL)info.getIntValue(TJS_W("isAngleScalable"), 0));
 					} else {
 						// 無い場合はモードを参照
 						lbrush = new LinearGradientBrush(rect, color1, color2,
-														 (LinearGradientMode)info.getIntValue(L"mode", LinearGradientModeHorizontal));
+														 (LinearGradientMode)info.getIntValue(TJS_W("mode"), LinearGradientModeHorizontal));
 					}
 				} else {
-					TVPThrowExceptionMessage(L"must set point1,2 or rect");
+					TVPThrowExceptionMessage(TJS_W("must set point1,2 or rect"));
 				}
 
 				// 共通パラメータ
 				commonBrushParameter(info, lbrush);
 
 				// SetWrapMode
-				if (info.checkVariant(L"wrapMode", var)) {
+				if (info.checkVariant(TJS_W("wrapMode"), var)) {
 					lbrush->SetWrapMode((WrapMode)(tjs_int)var);
 				}
 				brush = lbrush;
 			}
 			break;
 		default:
-			TVPThrowExceptionMessage(L"invalid brush type");
+			TVPThrowExceptionMessage(TJS_W("invalid brush type"));
 			break;
 		}
 	}
@@ -830,34 +830,34 @@ Appearance::addPen(tTJSVariant colorOrBrush, tTJSVariant widthOrOption, REAL ox,
 		tTJSVariant var;
 
 		// SetWidth
-		if (info.checkVariant(L"width", var)) {
+		if (info.checkVariant(TJS_W("width"), var)) {
 			penWidth = (REAL)(tjs_real)var;
 		}
 		pen->SetWidth(penWidth);
 
 		// SetAlignment
-		if (info.checkVariant(L"alignment", var)) {
+		if (info.checkVariant(TJS_W("alignment"), var)) {
 			pen->SetAlignment((PenAlignment)(tjs_int)var);
 		}
 		// SetCompoundArray
-		if (info.checkVariant(L"compoundArray", var)) {
+		if (info.checkVariant(TJS_W("compoundArray"), var)) {
 			vector<REAL> reals;
 			getReals(var, reals);
 			pen->SetCompoundArray(&reals[0], (int)reals.size());
 		}
 
 		// SetDashCap
-		if (info.checkVariant(L"dashCap", var)) {
+		if (info.checkVariant(TJS_W("dashCap"), var)) {
 			pen->SetDashCap((DashCap)(tjs_int)var);
 		}
 		// SetDashOffset
-		if (info.checkVariant(L"dashOffset", var)) {
+		if (info.checkVariant(TJS_W("dashOffset"), var)) {
 			pen->SetDashOffset((REAL)(tjs_real)var);
 		}
 
 		// SetDashStyle
 		// SetDashPattern
-		if (info.checkVariant(L"dashStyle", var)) {
+		if (info.checkVariant(TJS_W("dashStyle"), var)) {
 			if (IsArray(var)) {
 				vector<REAL> reals;
 				getReals(var, reals);
@@ -870,7 +870,7 @@ Appearance::addPen(tTJSVariant colorOrBrush, tTJSVariant widthOrOption, REAL ox,
 
 		// SetStartCap
 		// SetCustomStartCap
-		if (info.checkVariant(L"startCap", var)) {
+		if (info.checkVariant(TJS_W("startCap"), var)) {
 			LineCap cap = LineCapFlat;
 			CustomLineCap *custom = NULL;
 			if (getLineCap(var, cap, custom, penWidth)) {
@@ -881,7 +881,7 @@ Appearance::addPen(tTJSVariant colorOrBrush, tTJSVariant widthOrOption, REAL ox,
 
 		// SetEndCap
 		// SetCustomEndCap
-		if (info.checkVariant(L"endCap", var)) {
+		if (info.checkVariant(TJS_W("endCap"), var)) {
 			LineCap cap = LineCapFlat;
 			CustomLineCap *custom = NULL;
 			if (getLineCap(var, cap, custom, penWidth)) {
@@ -891,12 +891,12 @@ Appearance::addPen(tTJSVariant colorOrBrush, tTJSVariant widthOrOption, REAL ox,
 		}
 
 		// SetLineJoin
-		if (info.checkVariant(L"lineJoin", var)) {
+		if (info.checkVariant(TJS_W("lineJoin"), var)) {
 			pen->SetLineJoin((LineJoin)(tjs_int)var);
 		}
 		
 		// SetMiterLimit
-		if (info.checkVariant(L"miterLimit", var)) {
+		if (info.checkVariant(TJS_W("miterLimit"), var)) {
 			pen->SetMiterLimit((REAL)(tjs_real)var);
 		}
 	}
@@ -916,11 +916,11 @@ Appearance::getLineCap(tTJSVariant &in, LineCap &cap, CustomLineCap* &custom, RE
 			ncbPropAccessor info(in);
 			REAL width = pw, height = pw;
 			tTJSVariant var;
-			if (info.checkVariant(L"width",  var)) width  = (REAL)(tjs_real)var;
-			if (info.checkVariant(L"height", var)) height = (REAL)(tjs_real)var;
-			BOOL filled = (BOOL)info.getIntValue(L"filled", 1);
+			if (info.checkVariant(TJS_W("width"),  var)) width  = (REAL)(tjs_real)var;
+			if (info.checkVariant(TJS_W("height"), var)) height = (REAL)(tjs_real)var;
+			BOOL filled = (BOOL)info.getIntValue(TJS_W("filled"), 1);
 			AdjustableArrowCap *arrow = new AdjustableArrowCap(height, width, filled);
-			if (info.checkVariant(L"middleInset", var))
+			if (info.checkVariant(TJS_W("middleInset"), var))
 				arrow->SetMiddleInset((REAL)(tjs_real)var);
 			customLineCaps.push_back((custom = static_cast<CustomLineCap*>(arrow)));
 		}
@@ -1671,7 +1671,7 @@ LayerExDraw::measureStringInternal(const FontInfo *font, const tjs_char *text)
   graphics->SetTextRenderingHint(textRenderingHint);
   Font f(font->fontFamily, font->emSize, font->style, UnitPixel);
   graphics->MeasureString(text, -1, &f, PointF(0,0), StringFormat::GenericDefault(), &rect);
-  CharacterRange charRange(0, INT(wcslen(text)));
+  CharacterRange charRange(0, INT(TJS_strlen(text)));
   StringFormat stringFormat = StringFormat::GenericDefault();
   stringFormat.SetMeasurableCharacterRanges(1, &charRange);
   Region region;
@@ -2061,7 +2061,7 @@ LayerExDraw::getGlyphOutline(const FontInfo *fontInfo, PointF &offset, GraphicsP
         break;
 
       case TT_PRIM_QSPLINE:
-        TVPAddLog(ttstr(L"qspline"));
+        TVPAddLog(ttstr(TJS_W("qspline")));
         break;
 
       case TT_PRIM_CSPLINE:
@@ -2296,11 +2296,11 @@ LayerExDraw::saveImage(tTJSVariant *result, tjs_int numparams, tTJSVariant **par
 	if (numparams > 1) {
 		type = *param[1];
 	} else {
-		type = L"image/bmp";
+		type = TJS_W("image/bmp");
 	}
 	CLSID clsid;
 	if (!getEncoder(type.c_str(), &clsid)) {
-		TVPThrowExceptionMessage(L"unknown format:%1", type);
+		TVPThrowExceptionMessage(TJS_W("unknown format:%1"), type);
 	}
 
 	EncoderParameterGetter *caller = new EncoderParameterGetter();

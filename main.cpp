@@ -63,7 +63,7 @@ bool IsArray(const tTJSVariant &var)
 {
 	if (var.Type() == tvtObject) {
 		iTJSDispatch2 *obj = var.AsObjectNoAddRef();
-		return obj->IsInstanceOf(0, NULL, NULL, L"Array", obj) == TJS_S_TRUE;
+		return obj->IsInstanceOf(0, NULL, NULL, TJS_W("Array"), obj) == TJS_S_TRUE;
 	}
 	return false;
 }
@@ -108,8 +108,8 @@ struct PointFConvertor {
 					dst = PointF((REAL)info.getRealValue(0),
 								 (REAL)info.getRealValue(1));
 				} else {
-					dst = PointF((REAL)info.getRealValue(L"x"),
-								 (REAL)info.getRealValue(L"y"));
+					dst = PointF((REAL)info.getRealValue(TJS_W("x")),
+								 (REAL)info.getRealValue(TJS_W("y")));
 				}
 			}
 		} else {
@@ -155,10 +155,10 @@ struct RectFConvertor {
 								(REAL)info.getRealValue(2),
 								(REAL)info.getRealValue(3));
 				} else {
-					dst = RectF((REAL)info.getRealValue(L"x"),
-								(REAL)info.getRealValue(L"y"),
-								(REAL)info.getRealValue(L"width"),
-								(REAL)info.getRealValue(L"height"));
+					dst = RectF((REAL)info.getRealValue(TJS_W("x")),
+								(REAL)info.getRealValue(TJS_W("y")),
+								(REAL)info.getRealValue(TJS_W("width")),
+								(REAL)info.getRealValue(TJS_W("height")));
 				}
 			}
 		} else {
@@ -352,12 +352,12 @@ struct MatrixConvertor : public GdipTypeConvertor<T> {
 										(REAL)info.getRealValue(4),
 										(REAL)info.getRealValue(5));
 				} else {
-					result = new Matrix((REAL)info.getRealValue(L"m11"),
-										(REAL)info.getRealValue(L"m12"),
-										(REAL)info.getRealValue(L"m21"),
-										(REAL)info.getRealValue(L"m22"),
-										(REAL)info.getRealValue(L"dx"),
-										(REAL)info.getRealValue(L"dy"));
+					result = new Matrix((REAL)info.getRealValue(TJS_W("m11")),
+										(REAL)info.getRealValue(TJS_W("m12")),
+										(REAL)info.getRealValue(TJS_W("m21")),
+										(REAL)info.getRealValue(TJS_W("m22")),
+										(REAL)info.getRealValue(TJS_W("dx")),
+										(REAL)info.getRealValue(TJS_W("dy")));
 				}
 				dst = result;
 			}
