@@ -354,7 +354,7 @@ FontInfo::createFontMetric(void) const
   font.lfUnderline = style & 4;
   font.lfStrikeOut = style & 8;
   font.lfCharSet = DEFAULT_CHARSET;
-  wcscpy_s(font.lfFaceName, familyName.c_str());
+  wcscpy_s(font.lfFaceName, sizeof(font.lfFaceName) / sizeof(font.lfFaceName[0]), familyName.c_str());
   HFONT hFont = CreateFontIndirect(&font);
   if (hFont == NULL) {
     DeleteObject(dc);
