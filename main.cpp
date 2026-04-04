@@ -1,5 +1,5 @@
 #include "ncbind.hpp"
-#include "layerExDraw.hpp"
+#include "LayerExDraw.hpp"
 
 /**
  * ログ出力用
